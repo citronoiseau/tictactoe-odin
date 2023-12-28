@@ -31,6 +31,7 @@ const GameBoard = (function () {
     }
   };
   displayBoard();
+  console.log(`Players turn! To play enter play(y, x)`);
 
   return {
     getBoard,
@@ -52,27 +53,41 @@ function Cell() {
   };
 }
 
-function gameController() {
+const gameController = (function () {
   const players = [
     {
-      name: playerOneName,
+      name: "player",
       sign: "X",
     },
     {
-      name: playerTwoName,
+      name: "bot",
       sign: "O",
     },
   ];
-}
 
-function play(row, column, sign) {
+  let activePlayer = players[0];
+
+  const switchTurn = () => {
+    activePlayer = activePlayer === players[0] ? players[1] : players[0];
+  };
+  const getActivePlayer = () => activePlayer;
+  return {
+    switchTurn,
+    getActivePlayer,
+  };
+})();
+
+function play(row, column) {
   const cell = GameBoard.getBoard()[row][column];
-
+  const activePlayer = gameController.getActivePlayer();
   if (cell.getValue() === " ") {
     if (row >= 0 && row < 3 && column >= 0 && column < 3) {
-      cell.setValue(sign);
-      console.log(`Player: row ${row}, column ${column}, sign ${sign}`);
+      cell.setValue(activePlayer.sign);
+      console.log(
+        `${activePlayer.name}: row ${row}, column ${column}, sign ${activePlayer.sign}`
+      );
       GameBoard.displayBoard();
+      gameController.switchTurn();
     } else {
       console.log(`Only 3 rows and 3 columns are available!`);
     }
