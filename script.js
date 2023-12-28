@@ -15,23 +15,23 @@ const GameBoard = (function () {
   console.log("Creating board...");
 
   const displayBoard = function () {
-    for (let row = 0; row < rows; row++) {
+    for (let column = 0; column < columns; column++) {
       let cell = " ";
-      for (let column = 0; column < columns; column++) {
+      for (let row = 0; row < rows; row++) {
         cell += gameBoard[row][column].getValue() || " ";
 
-        if (column < columns - 1) {
+        if (row < rows - 1) {
           cell += " | ";
         }
       }
       console.log(cell);
-      if (row < rows - 1) {
+      if (column < columns - 1) {
         console.log("---------");
       }
     }
   };
   displayBoard();
-  console.log(`Players turn! To play enter play(y, x)`);
+  console.log(`Players turn! To play enter play(x, y)`);
 
   return {
     getBoard,
