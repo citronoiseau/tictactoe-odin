@@ -15,17 +15,17 @@ const GameBoard = (function () {
   console.log("Creating board...");
 
   const displayBoard = function () {
-    for (let column = 0; column < columns; column++) {
+    for (let row = 0; row < rows; row++) {
       let cell = " ";
-      for (let row = 0; row < rows; row++) {
+      for (let column = 0; column < columns; column++) {
         cell += gameBoard[row][column].getValue() || " ";
 
-        if (row < rows - 1) {
+        if (column < columns - 1) {
           cell += " | ";
         }
       }
       console.log(cell);
-      if (column < columns - 1) {
+      if (row < rows - 1) {
         console.log("---------");
       }
     }
@@ -33,9 +33,17 @@ const GameBoard = (function () {
   displayBoard();
   console.log(`Players turn! To play enter play(x, y)`);
 
+  const resetBoard = function () {
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
+        gameBoard[i][j].setValue(" ");
+      }
+    }
+  };
   return {
     getBoard,
     displayBoard,
+    resetBoard,
   };
 })();
 
@@ -56,12 +64,14 @@ function Cell() {
 const gameController = (function () {
   const players = [
     {
-      name: "player",
+      name: "Player",
       sign: "X",
+      moves: [],
     },
     {
-      name: "bot",
+      name: "Bot",
       sign: "O",
+      moves: [],
     },
   ];
 
@@ -69,11 +79,47 @@ const gameController = (function () {
 
   const switchTurn = () => {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
+    console.log(`${activePlayer.name}s turn! To play enter play(x, y)`);
+  };
+
+  const checkWin = function () {
+    const conditions = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+    const playerMoves = activePlayer.moves;
+    for (const toWin of conditions) {
+      if (toWin.every((index) => playerMoves.includes(index))) {
+        console.log(`${activePlayer.name} wins!`);
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const resetGame = function () {
+    GameBoard.resetBoard();
+    players.forEach((player) => {
+      player.moves = [];
+    });
+
+    activePlayer = players.find((player) => player.sign === "X");
+
+    GameBoard.displayBoard();
+    console.log(`${activePlayer.name}s turn! To play enter play(x, y)`);
   };
   const getActivePlayer = () => activePlayer;
   return {
     switchTurn,
     getActivePlayer,
+    checkWin,
+    resetGame,
   };
 })();
 
@@ -83,13 +129,24 @@ function play(row, column) {
   if (cell.getValue() === " ") {
     if (row >= 0 && row < 3 && column >= 0 && column < 3) {
       cell.setValue(activePlayer.sign);
+      const moveIndex = row * 3 + column;
+      activePlayer.moves.push(moveIndex);
       console.log(
-        `${activePlayer.name}: row ${row}, column ${column}, sign ${activePlayer.sign}`
+        `${activePlayer.name}: row ${row}, column ${column}, sign "${activePlayer.sign}"`
       );
       GameBoard.displayBoard();
-      gameController.switchTurn();
+      if (gameController.checkWin()) {
+        console.log("Game over!");
+        gameController.resetGame();
+      }
+      // if (roundCount === 9) {
+      //   console.log("It's a draw!");
+      //   gameController.resetGame(); }
+      else {
+        gameController.switchTurn();
+      }
     } else {
-      console.log(`Only 3 rows and 3 columns are available!`);
+      console.log(`Only 0-2 rows and 0-2 columns are available!`);
     }
   } else {
     console.log("Cell already occupied. Try again.");
