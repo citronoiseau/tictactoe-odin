@@ -74,7 +74,7 @@ const gameController = (function () {
       moves: [],
     },
   ];
-
+  let rounds = 1;
   let activePlayer = players[0];
 
   const switchTurn = () => {
@@ -100,6 +100,10 @@ const gameController = (function () {
         return true;
       }
     }
+    if (gameController.rounds === 9) {
+      console.log(`It's a draft!`);
+      return true;
+    }
     return false;
   };
 
@@ -110,7 +114,7 @@ const gameController = (function () {
     });
 
     activePlayer = players.find((player) => player.sign === "X");
-
+    console.log(`New game has started!`);
     GameBoard.displayBoard();
     console.log(`${activePlayer.name}s turn! To play enter play(x, y)`);
   };
@@ -120,6 +124,7 @@ const gameController = (function () {
     getActivePlayer,
     checkWin,
     resetGame,
+    rounds,
   };
 })();
 
@@ -138,11 +143,8 @@ function play(row, column) {
       if (gameController.checkWin()) {
         console.log("Game over!");
         gameController.resetGame();
-      }
-      // if (roundCount === 9) {
-      //   console.log("It's a draw!");
-      //   gameController.resetGame(); }
-      else {
+      } else {
+        gameController.rounds++;
         gameController.switchTurn();
       }
     } else {
