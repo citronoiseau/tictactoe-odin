@@ -81,6 +81,19 @@ const gameController = (function () {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
     console.log(`${activePlayer.name}s turn! To play enter play(x, y)`);
   };
+  const handleRounds = function () {
+    GameBoard.displayBoard();
+    if (checkWin()) {
+      console.log("Game over!");
+      resetGame();
+    } else {
+      rounds++;
+      switchTurn();
+      if (activePlayer.name === "Bot") {
+        botPlay();
+      }
+    }
+  };
 
   const checkWin = function () {
     const conditions = [
@@ -120,11 +133,8 @@ const gameController = (function () {
   };
   const getActivePlayer = () => activePlayer;
   return {
-    switchTurn,
     getActivePlayer,
-    checkWin,
-    resetGame,
-    rounds,
+    handleRounds,
   };
 })();
 
@@ -139,18 +149,29 @@ function play(row, column) {
       console.log(
         `${activePlayer.name}: row ${row}, column ${column}, sign "${activePlayer.sign}"`
       );
-      GameBoard.displayBoard();
-      if (gameController.checkWin()) {
-        console.log("Game over!");
-        gameController.resetGame();
-      } else {
-        gameController.rounds++;
-        gameController.switchTurn();
-      }
+      gameController.handleRounds();
     } else {
       console.log(`Only 0-2 rows and 0-2 columns are available!`);
     }
   } else {
     console.log("Cell already occupied. Try again.");
   }
+}
+
+function botPlay() {
+  const availableCells = [];
+  const board = GameBoard.getBoard();
+
+  for (let i = 0; i < board.length; i++) {
+    for (let j = 0; j < board[i].length; j++) {
+      if (board[i][j].getValue() === " ") {
+        availableCells.push({ row: i, column: j });
+      }
+    }
+  }
+
+  const randomIndex = Math.floor(Math.random() * availableCells.length);
+  const botMove = availableCells[randomIndex];
+
+  play(botMove.row, botMove.column);
 }
