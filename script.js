@@ -30,8 +30,6 @@ const GameBoard = (function () {
       }
     }
   };
-  displayBoard();
-  console.log(`Players turn! To play enter play(x, y)`);
 
   const resetBoard = function () {
     for (let i = 0; i < rows; i++) {
@@ -64,12 +62,14 @@ function Cell() {
 const gameController = (function () {
   const players = [
     {
-      name: "Player",
+      name: "Xan",
+      status: "Player",
       sign: "X",
       moves: [],
     },
     {
-      name: "Bot",
+      name: "Ola",
+      status: "Bot",
       sign: "O",
       moves: [],
     },
@@ -77,9 +77,14 @@ const gameController = (function () {
   let rounds = 1;
   let activePlayer = players[0];
 
+  const setPlayer = function (playerIndex, status) {
+    players[playerIndex].status = status;
+    console.log(players[playerIndex]);
+  };
+
   const switchTurn = () => {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
-    console.log(`${activePlayer.name}s turn! To play enter play(x, y)`);
+    console.log(`${activePlayer.name}'s turn! To play enter play(x, y)`);
   };
   const handleRounds = function () {
     GameBoard.displayBoard();
@@ -89,7 +94,7 @@ const gameController = (function () {
     } else {
       rounds++;
       switchTurn();
-      if (activePlayer.name === "Bot") {
+      if (activePlayer.status === "Bot") {
         botPlay();
       }
     }
@@ -120,6 +125,15 @@ const gameController = (function () {
     return false;
   };
 
+  const initializeGame = function () {
+    GameBoard.displayBoard();
+    console.log(`${activePlayer.name}'s turn! To play enter play(x, y)`);
+
+    if (activePlayer.status === "Bot") {
+      botPlay();
+    }
+  };
+
   const resetGame = function () {
     GameBoard.resetBoard();
     players.forEach((player) => {
@@ -129,12 +143,15 @@ const gameController = (function () {
     activePlayer = players.find((player) => player.sign === "X");
     console.log(`New game has started!`);
     GameBoard.displayBoard();
-    console.log(`${activePlayer.name}s turn! To play enter play(x, y)`);
+    console.log(`${activePlayer.name}'s turn! To play enter play(x, y)`);
   };
+
   const getActivePlayer = () => activePlayer;
   return {
+    setPlayer,
     getActivePlayer,
     handleRounds,
+    initializeGame,
   };
 })();
 
@@ -172,6 +189,51 @@ function botPlay() {
 
   const randomIndex = Math.floor(Math.random() * availableCells.length);
   const botMove = availableCells[randomIndex];
-
   play(botMove.row, botMove.column);
 }
+const toggleActivePlayer = function (playerBtn, botBtn) {
+  const activePlayer = gameController.getActivePlayer();
+  if (activePlayer.status === "Player") {
+    playerBtn.classList.add("active");
+    botBtn.classList.remove("active");
+  } else {
+    botBtn.classList.add("active");
+    playerBtn.classList.remove("active");
+  }
+};
+const setControls = (function () {
+  const setPlayerFirstBtn = document.querySelector("#choosePlayerOne");
+  const setBotFirstBtn = document.querySelector("#chooseBotOne");
+
+  const setPlayerSecondBtn = document.querySelector("#choosePlayerTwo");
+  const setBotSecondBtn = document.querySelector("#chooseBotTwo");
+
+  setPlayerFirstBtn.addEventListener("click", () =>
+    gameController.setPlayer(0, "Player")
+  );
+  setBotFirstBtn.addEventListener("click", () =>
+    gameController.setPlayer(0, "Bot")
+  );
+  setPlayerSecondBtn.addEventListener("click", () =>
+    gameController.setPlayer(1, "Player")
+  );
+  setBotSecondBtn.addEventListener("click", () =>
+    gameController.setPlayer(1, "Bot")
+  );
+
+  setPlayerFirstBtn.addEventListener("click", () =>
+    toggleActivePlayer(setPlayerFirstBtn, setBotFirstBtn)
+  );
+  setBotFirstBtn.addEventListener("click", () =>
+    toggleActivePlayer(setPlayerFirstBtn, setBotFirstBtn)
+  );
+  setPlayerSecondBtn.addEventListener("click", () =>
+    toggleActivePlayer(setPlayerSecondBtn, setBotSecondBtn)
+  );
+  setBotSecondBtn.addEventListener("click", () =>
+    toggleActivePlayer(setPlayerSecondBtn, setBotSecondBtn)
+  );
+
+  const startGameBtn = document.querySelector("#startGameBtn");
+  startGameBtn.addEventListener("click", gameController.initializeGame);
+})();

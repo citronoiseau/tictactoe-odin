@@ -4,8 +4,45 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-  </head>
+    <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600&family=Rubik:wght@700&display=swap" rel="stylesheet">
   <body>
+
+    <h1>TIC TAC TOE</h1>
+    <div class="titleScreen"> 
+    <h2> Choose your players!</h2>
+    <div class="playerCards"> 
+      
+      <div class="card playerCard">
+      <div class="name"> Name: Xan</div>
+        <div class="imageCard">
+        <img src="./images/Xan.jpg"/> 
+        </div>
+          <div class="sign"> Sign: X </div>
+            <button id="choosePlayerOne" class="choosePlayer active"> Player</button>
+             <button  id="chooseBotOne" class="chooseBot"> Bot</button>
+
+        </div>
+
+
+     <div class="card botCard">
+        <div class="name"> Name: Ola</div>
+        <div class="imageCard">
+        <img src="./images/Olive.jpg"/> 
+        </div>
+        <div class="sign"> Sign: O </div>
+         <button id="choosePlayerTwo" class="choosePlayer"> Player</button>
+             <button id="chooseBotTwo" class="chooseBot active"> Bot</button>
+        </div>
+
+      </div>
+      <div class="startButtonContainer"> 
+         <button id="startGameBtn"> Start game!</button>
+         <div></div>
+      </div>
+
     <script src="script.js"></script>
   </body>
 </html>
