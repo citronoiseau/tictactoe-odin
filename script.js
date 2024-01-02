@@ -76,6 +76,8 @@ const gameController = (function () {
   ];
   let rounds = 1;
   let activePlayer = players[0];
+  const getActivePlayer = () => activePlayer;
+  const getPlayers = () => players;
 
   const setPlayer = function (playerIndex, status) {
     players[playerIndex].status = status;
@@ -146,12 +148,12 @@ const gameController = (function () {
     console.log(`${activePlayer.name}'s turn! To play enter play(x, y)`);
   };
 
-  const getActivePlayer = () => activePlayer;
   return {
     setPlayer,
     getActivePlayer,
     handleRounds,
     initializeGame,
+    getPlayers,
   };
 })();
 
@@ -191,9 +193,9 @@ function botPlay() {
   const botMove = availableCells[randomIndex];
   play(botMove.row, botMove.column);
 }
-const toggleActivePlayer = function (playerBtn, botBtn) {
-  const activePlayer = gameController.getActivePlayer();
-  if (activePlayer.status === "Player") {
+const toggleActivePlayer = function (playerBtn, botBtn, index) {
+  const player = gameController.getPlayers();
+  if (player[index].status === "Player") {
     playerBtn.classList.add("active");
     botBtn.classList.remove("active");
   } else {
@@ -208,31 +210,22 @@ const setControls = (function () {
   const setPlayerSecondBtn = document.querySelector("#choosePlayerTwo");
   const setBotSecondBtn = document.querySelector("#chooseBotTwo");
 
-  setPlayerFirstBtn.addEventListener("click", () =>
-    gameController.setPlayer(0, "Player")
-  );
-  setBotFirstBtn.addEventListener("click", () =>
-    gameController.setPlayer(0, "Bot")
-  );
-  setPlayerSecondBtn.addEventListener("click", () =>
-    gameController.setPlayer(1, "Player")
-  );
-  setBotSecondBtn.addEventListener("click", () =>
-    gameController.setPlayer(1, "Bot")
-  );
-
-  setPlayerFirstBtn.addEventListener("click", () =>
-    toggleActivePlayer(setPlayerFirstBtn, setBotFirstBtn)
-  );
-  setBotFirstBtn.addEventListener("click", () =>
-    toggleActivePlayer(setPlayerFirstBtn, setBotFirstBtn)
-  );
-  setPlayerSecondBtn.addEventListener("click", () =>
-    toggleActivePlayer(setPlayerSecondBtn, setBotSecondBtn)
-  );
-  setBotSecondBtn.addEventListener("click", () =>
-    toggleActivePlayer(setPlayerSecondBtn, setBotSecondBtn)
-  );
+  setPlayerFirstBtn.addEventListener("click", () => {
+    gameController.setPlayer(0, "Player");
+    toggleActivePlayer(setPlayerFirstBtn, setBotFirstBtn, 0);
+  });
+  setBotFirstBtn.addEventListener("click", () => {
+    gameController.setPlayer(0, "Bot");
+    toggleActivePlayer(setPlayerFirstBtn, setBotFirstBtn, 0);
+  });
+  setPlayerSecondBtn.addEventListener("click", () => {
+    gameController.setPlayer(1, "Player");
+    toggleActivePlayer(setPlayerSecondBtn, setBotSecondBtn, 1);
+  });
+  setBotSecondBtn.addEventListener("click", () => {
+    gameController.setPlayer(1, "Bot");
+    toggleActivePlayer(setPlayerSecondBtn, setBotSecondBtn, 1);
+  });
 
   const startGameBtn = document.querySelector("#startGameBtn");
   startGameBtn.addEventListener("click", gameController.initializeGame);
