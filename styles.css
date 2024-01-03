@@ -4,7 +4,7 @@
   box-sizing: border-box;
 }
 body {
-  background-color: #fddfca;
+  background-color: #fbe3d2;
   font-family: "Josefin Sans", sans-serif;
 }
 
@@ -16,9 +16,21 @@ h1 {
   margin-top: 30px;
   color: #381204;
 }
-.titleScreen {
+.titleScreen,
+.boardScreen {
   display: flex;
   flex-direction: column;
+  opacity: 1;
+  transition: all 1s ease-out;
+}
+
+.titleHidden,
+.boardScreenHidden {
+  opacity: 0;
+}
+.boardScreenHidden {
+  height: 0;
+  overflow: hidden;
 }
 h2,
 .startButtonContainer {
@@ -88,12 +100,15 @@ button {
 .active {
   background-color: #ff9e75;
 }
-.card button:hover,
-#startGameBtn:hover {
+.card button:hover {
   background-color: #ffc2a8;
 }
 .card button.active:hover {
   background-color: #ff773d;
+}
+.card button.active:active,
+#startGameBtn:active {
+  background-color: #fcb292;
 }
 .startButtonContainer {
   margin-top: 40px;
@@ -107,5 +122,49 @@ button {
   transition: all 0.4s ease;
 }
 #startGameBtn:hover {
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+  font-size: 1.4rem;
+  background-color: #ff9e75;
+}
+
+.boardScreen {
+  margin-top: 20px;
+  align-items: center;
+}
+
+h3,
+.roundCounter {
+  margin: 20px;
+  font-size: 1.5rem;
+}
+.boardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-template-rows: repeat(3, 100px);
+  gap: 15px;
+}
+.boardCell {
+  border-radius: 25px;
+  font-size: 2rem;
+  transition: all 0.4s ease;
+}
+.boardCell:hover {
+  background-color: #ffc2a8;
+  transform: scale(1.07);
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+}
+.boardCell:active,
+.card button:active {
+  background-color: #feecdb;
+}
+.gameControlsContainer {
+  display: flex;
+  gap: 25px;
+  margin: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.controlsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }

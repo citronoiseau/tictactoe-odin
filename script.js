@@ -193,6 +193,7 @@ function botPlay() {
   const botMove = availableCells[randomIndex];
   play(botMove.row, botMove.column);
 }
+
 const toggleActivePlayer = function (playerBtn, botBtn, index) {
   const player = gameController.getPlayers();
   if (player[index].status === "Player") {
@@ -203,7 +204,7 @@ const toggleActivePlayer = function (playerBtn, botBtn, index) {
     playerBtn.classList.remove("active");
   }
 };
-const setControls = (function () {
+const setPlayers = (function () {
   const setPlayerFirstBtn = document.querySelector("#choosePlayerOne");
   const setBotFirstBtn = document.querySelector("#chooseBotOne");
 
@@ -226,7 +227,20 @@ const setControls = (function () {
     gameController.setPlayer(1, "Bot");
     toggleActivePlayer(setPlayerSecondBtn, setBotSecondBtn, 1);
   });
+})();
 
+const DOM = (function () {
+  const titleScreen = document.querySelector(".titleScreen");
+  const boardScreen = document.querySelector(".boardScreen");
   const startGameBtn = document.querySelector("#startGameBtn");
-  startGameBtn.addEventListener("click", gameController.initializeGame);
+  startGameBtn.addEventListener("click", function () {
+    titleScreen.classList.add("titleHidden");
+
+    setTimeout(() => {
+      titleScreen.style.display = "none";
+      boardScreen.style.display = "flex";
+      boardScreen.classList.remove("boardScreenHidden");
+      gameController.initializeGame();
+    }, 500);
+  });
 })();
