@@ -11,6 +11,7 @@
   <body>
 
     <h1>TIC TAC TOE</h1>
+
     <div class="titleScreen"> 
     <h2> Choose your players!</h2>
     <div class="playerCards"> 
@@ -43,7 +44,7 @@
       </div>
       </div>
 <div class="boardScreen boardScreenHidden">
-  <h3> Xan's turn!</h3>
+  <h3 class="setMessage"> Xan's turn!</h3>
   <div class="gameControlsContainer">
   <div class="boardContainer">
   <div class="boardGrid">
@@ -59,8 +60,8 @@
   </div>
 </div>
 <div class="controlsContainer">
-  <button> Restart!</button>
-  <button> Change players</button>
+  <button class="restartBtn"> Restart!</button>
+  <button class="returnBtn"> Change players</button>
   <table class="scoreBoard">
     <caption> Scoreboard</caption>
     <tr>
@@ -69,17 +70,19 @@
     </tr>
     <tr> 
       <th>Xan</th>
-        <th>1</th>
+        <th class="xanScore">0</th>
     </tr>
       <tr> 
       <th> Ola</th>
-        <th>0</th>
+        <th class="olaScore">0</th>
     </tr>
   </table>
 </div>
 </div>
 <div class="roundCounter"> Round 1</div>
+<button class="startNewRound"> Start new round?</button>
 </div>
+
     <script src="script.js"></script>
   </body>
 </html>

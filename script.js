@@ -22,13 +22,51 @@ const GameBoard = (function () {
   };
 })();
 
-const displayDOM = function () {
+const displayDOM = (function () {
   const cells = document.querySelectorAll(".boardCell");
+  const gameMessage = document.querySelector(".setMessage");
+  const restartBtn = document.querySelector(".restartBtn");
+  const startNewRoundBtn = document.querySelector(".startNewRound");
+
+  const xanScore = document.querySelector(".xanScore");
+  const olaScore = document.querySelector(".olaScore");
+  const roundCounter = document.querySelector(".roundCounter");
+
   cells.forEach((cell, index) => {
-    cell.textContent = GameBoard.getCell(index) || "";
     cell.addEventListener("click", () => gameController.playRound(index));
   });
-};
+
+  const updateBoard = () => {
+    for (let i = 0; i < cells.length; i++) {
+      cells[i].textContent = GameBoard.getCell(i);
+    }
+  };
+
+  const setGameMessage = (text) => {
+    gameMessage.textContent = text;
+  };
+
+  const setXanScore = (score) => {
+    xanScore.textContent = score;
+  };
+  const setOlaScore = (score) => {
+    olaScore.textContent = score;
+  };
+  const setRoundCounter = (round) => {
+    roundCounter.textContent = `Round ${round}`;
+  };
+  restartBtn.addEventListener("click", () => gameController.resetGame());
+  startNewRoundBtn.addEventListener("click", () =>
+    gameController.startNewRound()
+  );
+  return {
+    updateBoard,
+    setGameMessage,
+    setXanScore,
+    setOlaScore,
+    setRoundCounter,
+  };
+})();
 
 const handlePlayers = (function () {
   const players = [
@@ -37,31 +75,43 @@ const handlePlayers = (function () {
       status: "Player",
       sign: "X",
       moves: [],
+      score: 0,
     },
     {
       name: "Ola",
       status: "Bot",
       sign: "O",
       moves: [],
+      score: 0,
     },
   ];
-
   let activePlayer = players[0];
   const getActivePlayer = () => activePlayer;
   const getPlayers = () => players;
 
   const setPlayer = function (playerIndex, status) {
     players[playerIndex].status = status;
-    console.log(players[playerIndex]);
   };
 
+  const setActivePlayer = function () {
+    activePlayer = players[0];
+    return activePlayer;
+  };
   const switchTurn = () => {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
-    console.log(`${activePlayer.name}'s turn! To play enter play(x, y)`);
+    if (players[0].status === "Bot" && players[1].status === "Bot") {
+      botMoveWait = setTimeout(() => {
+        displayDOM.setGameMessage(`${activePlayer.name}'s turn!`);
+      }, 500);
+    } else {
+      displayDOM.setGameMessage(`${activePlayer.name}'s turn!`);
+    }
+
     return activePlayer;
   };
   return {
     getActivePlayer,
+    setActivePlayer,
     getPlayers,
     setPlayer,
     switchTurn,
@@ -71,35 +121,38 @@ const handlePlayers = (function () {
 const gameController = (function () {
   let activePlayer = handlePlayers.getActivePlayer();
   let rounds = 1;
+  let generalRounds = 1;
   let isWin = false;
+  let botMoveWait;
 
   const playRound = function (index) {
     activePlayer = handlePlayers.getActivePlayer();
     if (isWin || GameBoard.getCell(index) !== "") return;
     GameBoard.setCell(index, activePlayer.sign);
     activePlayer.moves.push(index);
+    clearTimeout(botMoveWait);
     handleRounds();
   };
 
   const handleRounds = function () {
-    displayDOM();
+    displayDOM.updateBoard();
     if (checkWin()) {
-      console.log("Game over!");
-      //   resetGame();
     } else {
       rounds++;
       if (rounds <= 9) {
         handlePlayers.switchTurn();
         activePlayer = handlePlayers.getActivePlayer();
         if (activePlayer.status === "Bot") {
-          botPlay();
+          botMoveWait = setTimeout(() => {
+            botPlay();
+          }, 500);
         }
       } else {
-        console.log("It's a draw!");
-        // resetGame();
+        displayDOM.setGameMessage("It's a draw!");
       }
     }
   };
+  isWin = false;
 
   const checkWin = function () {
     const conditions = [
@@ -115,7 +168,9 @@ const gameController = (function () {
     const playerMoves = activePlayer.moves;
     for (const toWin of conditions) {
       if (toWin.every((index) => playerMoves.includes(index))) {
-        console.log(`${activePlayer.name} wins!`);
+        displayDOM.setGameMessage(`${activePlayer.name} wins!`);
+        activePlayer.score++;
+        displayDOM[`set${activePlayer.name}Score`](activePlayer.score);
         isWin = true;
         return true;
       }
@@ -123,31 +178,62 @@ const gameController = (function () {
     return false;
   };
 
-  const initializeGame = function () {
-    displayDOM();
-  };
-
   const resetGame = function () {
     GameBoard.resetBoard();
+    displayDOM.updateBoard();
+    clearTimeout(botMoveWait);
+    isWin = false;
+    rounds = 1;
+    generalRounds = 1;
+    displayDOM.setRoundCounter(1);
+    handlePlayers.setActivePlayer();
+    displayDOM.setGameMessage(
+      `${handlePlayers.getActivePlayer().name}'s turn!`
+    );
+    handlePlayers.getPlayers().forEach((player) => {
+      player.moves = [];
+      player.score = 0;
+    });
+    displayDOM.setXanScore(0);
+    displayDOM.setOlaScore(0);
+    if (activePlayer.status === "Bot") {
+      botMoveWait = setTimeout(() => {
+        botPlay();
+      }, 700);
+    }
+  };
+
+  const startNewRound = function () {
+    GameBoard.resetBoard();
+    displayDOM.updateBoard();
+    clearTimeout(botMoveWait);
+    isWin = false;
+    rounds = 1;
+    generalRounds++;
+    displayDOM.setRoundCounter(generalRounds);
+    handlePlayers.setActivePlayer();
+    displayDOM.setGameMessage(
+      `${handlePlayers.getActivePlayer().name}'s turn!`
+    );
     handlePlayers.getPlayers().forEach((player) => {
       player.moves = [];
     });
-
-    activePlayer = handlePlayers
-      .getPlayers()
-      .find((player) => player.sign === "X");
-    displayDOM();
+    if (activePlayer.status === "Bot") {
+      botMoveWait = setTimeout(() => {
+        botPlay();
+      }, 500);
+    }
   };
 
   return {
     handleRounds,
-    initializeGame,
     playRound,
+    resetGame,
+    startNewRound,
   };
 })();
 
 function botPlay() {
-  console.log("Bot is called!");
   const availableCells = [];
   const board = GameBoard.getBoard();
 
@@ -202,14 +288,26 @@ const changeScreens = (function () {
   const titleScreen = document.querySelector(".titleScreen");
   const boardScreen = document.querySelector(".boardScreen");
   const startGameBtn = document.querySelector("#startGameBtn");
+  const returnScreenBtn = document.querySelector(".returnBtn");
+
   startGameBtn.addEventListener("click", function () {
     titleScreen.classList.add("titleHidden");
 
     setTimeout(() => {
       titleScreen.style.display = "none";
-      boardScreen.style.display = "flex";
       boardScreen.classList.remove("boardScreenHidden");
-      gameController.initializeGame();
+      boardScreen.style.display = "flex";
+    }, 500);
+    gameController.resetGame();
+  });
+
+  returnScreenBtn.addEventListener("click", function () {
+    boardScreen.classList.add("boardScreenHidden");
+
+    setTimeout(() => {
+      boardScreen.style.display = "none";
+      titleScreen.classList.remove("titleHidden");
+      titleScreen.style.display = "flex";
     }, 500);
   });
 })();
