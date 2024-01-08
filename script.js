@@ -196,7 +196,7 @@ const gameController = (function () {
     });
     displayDOM.setXanScore(0);
     displayDOM.setOlaScore(0);
-    if (activePlayer.status === "Bot") {
+    if (handlePlayers.getActivePlayer().status === "Bot") {
       botMoveWait = setTimeout(() => {
         botPlay();
       }, 700);
@@ -218,7 +218,7 @@ const gameController = (function () {
     handlePlayers.getPlayers().forEach((player) => {
       player.moves = [];
     });
-    if (activePlayer.status === "Bot") {
+    if (handlePlayers.getActivePlayer().status === "Bot") {
       botMoveWait = setTimeout(() => {
         botPlay();
       }, 500);
@@ -294,9 +294,9 @@ const changeScreens = (function () {
     titleScreen.classList.add("titleHidden");
 
     setTimeout(() => {
-      titleScreen.style.display = "none";
       boardScreen.classList.remove("boardScreenHidden");
-      boardScreen.style.display = "flex";
+      titleScreen.classList.add("scrollbarHidden");
+      boardScreen.classList.remove("scrollbarHidden");
     }, 500);
     gameController.resetGame();
   });
@@ -305,9 +305,9 @@ const changeScreens = (function () {
     boardScreen.classList.add("boardScreenHidden");
 
     setTimeout(() => {
-      boardScreen.style.display = "none";
       titleScreen.classList.remove("titleHidden");
-      titleScreen.style.display = "flex";
+      titleScreen.classList.remove("scrollbarHidden");
+      boardScreen.classList.add("scrollbarHidden");
     }, 500);
   });
 })();
