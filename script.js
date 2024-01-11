@@ -32,6 +32,27 @@ const displayDOM = (function () {
   const olaScore = document.querySelector(".olaScore");
   const roundCounter = document.querySelector(".roundCounter");
 
+  const xanDifficultyContainer = document.querySelector(".xanDifficulty");
+  const olaDifficultyContainer = document.querySelector(".olaDifficulty");
+
+  const updateDifficultyContainer = function () {
+    let player = handlePlayers.getPlayers();
+
+    if (player[0].status === "Bot") {
+      console.log("Changed!");
+      xanDifficultyContainer.classList.remove("difficultyHidden");
+    }
+    if (player[0].status === "Player") {
+      xanDifficultyContainer.classList.add("difficultyHidden");
+    }
+    if (player[1].status === "Bot") {
+      olaDifficultyContainer.classList.remove("difficultyHidden");
+    }
+    if (player[1].status === "Player") {
+      olaDifficultyContainer.classList.add("difficultyHidden");
+    }
+  };
+
   cells.forEach((cell, index) => {
     cell.addEventListener("click", () => gameController.playRound(index));
   });
@@ -59,12 +80,14 @@ const displayDOM = (function () {
   startNewRoundBtn.addEventListener("click", () =>
     gameController.startNewRound()
   );
+
   return {
     updateBoard,
     setGameMessage,
     setXanScore,
     setOlaScore,
     setRoundCounter,
+    updateDifficultyContainer,
   };
 })();
 
@@ -76,6 +99,7 @@ const handlePlayers = (function () {
       sign: "X",
       moves: [],
       score: 0,
+      level: 0,
     },
     {
       name: "Ola",
@@ -83,6 +107,7 @@ const handlePlayers = (function () {
       sign: "O",
       moves: [],
       score: 0,
+      level: 0,
     },
   ];
   let activePlayer = players[0];
@@ -109,12 +134,24 @@ const handlePlayers = (function () {
 
     return activePlayer;
   };
+
+  const toggleActivePlayer = function (playerBtn, botBtn, index) {
+    if (players[index].status === "Player") {
+      playerBtn.classList.add("active");
+      botBtn.classList.remove("active");
+    } else {
+      botBtn.classList.add("active");
+      playerBtn.classList.remove("active");
+    }
+  };
+
   return {
     getActivePlayer,
     setActivePlayer,
     getPlayers,
     setPlayer,
     switchTurn,
+    toggleActivePlayer,
   };
 })();
 
@@ -248,17 +285,6 @@ function botPlay() {
   gameController.playRound(botMove);
 }
 
-const toggleActivePlayer = function (playerBtn, botBtn, index) {
-  const player = handlePlayers.getPlayers();
-  if (player[index].status === "Player") {
-    playerBtn.classList.add("active");
-    botBtn.classList.remove("active");
-  } else {
-    botBtn.classList.add("active");
-    playerBtn.classList.remove("active");
-  }
-};
-
 const setPlayers = (function () {
   const setPlayerFirstBtn = document.querySelector("#choosePlayerOne");
   const setBotFirstBtn = document.querySelector("#chooseBotOne");
@@ -268,20 +294,27 @@ const setPlayers = (function () {
 
   setPlayerFirstBtn.addEventListener("click", () => {
     handlePlayers.setPlayer(0, "Player");
-    toggleActivePlayer(setPlayerFirstBtn, setBotFirstBtn, 0);
+    handlePlayers.toggleActivePlayer(setPlayerFirstBtn, setBotFirstBtn, 0);
+    displayDOM.updateDifficultyContainer();
   });
   setBotFirstBtn.addEventListener("click", () => {
     handlePlayers.setPlayer(0, "Bot");
-    toggleActivePlayer(setPlayerFirstBtn, setBotFirstBtn, 0);
+    handlePlayers.toggleActivePlayer(setPlayerFirstBtn, setBotFirstBtn, 0);
+    displayDOM.updateDifficultyContainer();
   });
   setPlayerSecondBtn.addEventListener("click", () => {
     handlePlayers.setPlayer(1, "Player");
-    toggleActivePlayer(setPlayerSecondBtn, setBotSecondBtn, 1);
+    handlePlayers.toggleActivePlayer(setPlayerSecondBtn, setBotSecondBtn, 1);
+    displayDOM.updateDifficultyContainer();
   });
   setBotSecondBtn.addEventListener("click", () => {
     handlePlayers.setPlayer(1, "Bot");
-    toggleActivePlayer(setPlayerSecondBtn, setBotSecondBtn, 1);
+    handlePlayers.toggleActivePlayer(setPlayerSecondBtn, setBotSecondBtn, 1);
+    displayDOM.updateDifficultyContainer();
   });
+
+  const xanDifficulty = document.querySelectorAll(".xanDifficulty button");
+  const olaDifficulty = document.querySelectorAll(".olaDifficulty button");
 })();
 
 const changeScreens = (function () {

@@ -55,6 +55,7 @@ h2,
   gap: 10px;
   flex-direction: column;
   opacity: 1;
+  transition: all 1s ease-out;
 }
 .difficultyHidden {
   visibility: hidden;
