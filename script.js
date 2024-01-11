@@ -118,6 +118,14 @@ const handlePlayers = (function () {
   ];
   let activePlayer = players[0];
   const getActivePlayer = () => activePlayer;
+  const getWaitingPlayer = function () {
+    if (players[0] === activePlayer) {
+      return players[1];
+    }
+    if (players[1] === activePlayer) {
+      return players[0];
+    }
+  };
   const getPlayers = () => players;
 
   const setPlayer = function (playerIndex, status) {
@@ -154,10 +162,6 @@ const handlePlayers = (function () {
   const setDifficulty = function (player, difficulty) {
     const playerIndex = player === "Xan" ? 0 : 1;
     const difficultyType = ["Easy", "Hard", "Death"].indexOf(difficulty);
-    if (difficulty === "Death") {
-      alert("Sorry, this difficulty is not implemented yet!");
-    }
-
     players[playerIndex].difficulty = difficultyType;
   };
 
@@ -169,6 +173,7 @@ const handlePlayers = (function () {
     switchTurn,
     toggleActivePlayer,
     setDifficulty,
+    getWaitingPlayer,
   };
 })();
 
@@ -196,9 +201,13 @@ const gameController = (function () {
       if (rounds <= 9) {
         handlePlayers.switchTurn();
         activePlayer = handlePlayers.getActivePlayer();
-        if (activePlayer.status === "Bot") {
+        if (handlePlayers.getActivePlayer().status === "Bot") {
           botMoveWait = setTimeout(() => {
-            botPlay();
+            if (handlePlayers.getActivePlayer().difficulty === 1) {
+              botPlayHard();
+            } else if (handlePlayers.getActivePlayer().difficulty === 0) {
+              botPlay();
+            }
           }, 500);
         }
       } else {
@@ -252,7 +261,12 @@ const gameController = (function () {
     displayDOM.setOlaScore(0);
     if (handlePlayers.getActivePlayer().status === "Bot") {
       botMoveWait = setTimeout(() => {
-        botPlay();
+        if (handlePlayers.getActivePlayer().difficulty === 1) {
+          botPlayHard();
+        }
+        if (handlePlayers.getActivePlayer().difficulty === 0) {
+          botPlay();
+        }
       }, 700);
     }
   };
@@ -274,7 +288,12 @@ const gameController = (function () {
     });
     if (handlePlayers.getActivePlayer().status === "Bot") {
       botMoveWait = setTimeout(() => {
-        botPlay();
+        if (handlePlayers.getActivePlayer().difficulty === 1) {
+          botPlayHard();
+        }
+        if (handlePlayers.getActivePlayer().difficulty === 0) {
+          botPlay();
+        }
       }, 500);
     }
   };
@@ -297,6 +316,46 @@ function botPlay() {
     }
   }
 
+  const randomIndex = Math.floor(Math.random() * availableCells.length);
+  const botMove = availableCells[randomIndex];
+  gameController.playRound(botMove);
+}
+
+function botPlayHard() {
+  const availableCells = [];
+  const board = GameBoard.getBoard();
+  let opponentMoves = handlePlayers.getWaitingPlayer().moves;
+  for (let i = 0; i < board.length; i++) {
+    if (board[i] === "") {
+      availableCells.push(i);
+    }
+  }
+  const conditions = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+
+  for (const condition of conditions) {
+    const occupiedByOpponent = condition.filter((cell) =>
+      opponentMoves.includes(cell)
+    );
+
+    const unoccupiedCells = condition.filter(
+      (cell) => !opponentMoves.includes(cell) && board[cell] === ""
+    );
+
+    if (unoccupiedCells.length === 1 && occupiedByOpponent.length === 2) {
+      const blockingCell = unoccupiedCells[0];
+      gameController.playRound(blockingCell);
+      return;
+    }
+  }
   const randomIndex = Math.floor(Math.random() * availableCells.length);
   const botMove = availableCells[randomIndex];
   gameController.playRound(botMove);
@@ -342,15 +401,23 @@ const setPlayers = (function () {
 
   xanDifficulty.forEach((button) => {
     button.addEventListener("click", () => {
-      handlePlayers.setDifficulty("Xan", button.textContent);
-      toggleActiveDifficulty(xanDifficulty, button);
+      if (button.textContent !== "Death") {
+        handlePlayers.setDifficulty("Xan", button.textContent);
+        toggleActiveDifficulty(xanDifficulty, button);
+      } else {
+        alert("Sorry, this difficulty is not implemented yet!");
+      }
     });
   });
 
   olaDifficulty.forEach((button) => {
     button.addEventListener("click", () => {
-      handlePlayers.setDifficulty("Ola", button.textContent);
-      toggleActiveDifficulty(olaDifficulty, button);
+      if (button.textContent !== "Death") {
+        handlePlayers.setDifficulty("Ola", button.textContent);
+        toggleActiveDifficulty(olaDifficulty, button);
+      } else {
+        alert("Sorry, this difficulty is not implemented yet!");
+      }
     });
   });
 })();
