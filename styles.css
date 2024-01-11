@@ -45,6 +45,33 @@ h2,
   flex-wrap: wrap;
   gap: 40px;
 }
+.cardMenu {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.difficultyContainer {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  opacity: 1;
+}
+.difficultyHidden {
+  visibility: hidden;
+  opacity: 0;
+}
+.difficultyContainer button:nth-last-child(1) {
+  position: relative;
+  color: #38120400;
+}
+
+.difficultyContainer button:nth-last-child(1)::before {
+  content: url("./images/skull.svg");
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 .card {
   display: flex;
   flex-direction: column;
@@ -170,7 +197,8 @@ h3,
   gap: 15px;
 }
 .controlsContainer button,
-.startNewRound {
+.startNewRound,
+.difficultyContainer button {
   background-color: #381204;
   padding: 15px 15px;
   font-size: 0.8rem;
@@ -180,12 +208,14 @@ h3,
     rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 }
 .controlsContainer button:hover,
-.startNewRound:hover {
+.startNewRound:hover,
+.difficultyContainer button:hover {
   background-color: #692911;
   transform: translateY(-5px);
 }
 .controlsContainer button:active,
-.startNewRound:active {
+.startNewRound:active,
+.difficultyContainer button:active {
   background-color: #a24c2d;
 }
 .scoreBoard {
@@ -201,4 +231,12 @@ footer a {
 }
 footer a:hover {
   color: #ff9142;
+}
+@media (max-width: 767px) {
+  .cardMenu {
+    flex-direction: column;
+  }
+  .difficultyContainer {
+    flex-direction: row;
+  }
 }
