@@ -39,7 +39,6 @@ const displayDOM = (function () {
     let player = handlePlayers.getPlayers();
 
     if (player[0].status === "Bot") {
-      console.log("Changed!");
       xanDifficultyContainer.classList.remove("difficultyHidden");
     }
     if (player[0].status === "Player") {
@@ -60,6 +59,13 @@ const displayDOM = (function () {
   const updateBoard = () => {
     for (let i = 0; i < cells.length; i++) {
       cells[i].textContent = GameBoard.getCell(i);
+      cells[i].classList.remove("xColor", "oColor");
+      if (cells[i].textContent === "X") {
+        cells[i].classList.add("xColor");
+      }
+      if (cells[i].textContent === "O") {
+        cells[i].classList.add("oColor");
+      }
     }
   };
 
@@ -99,7 +105,7 @@ const handlePlayers = (function () {
       sign: "X",
       moves: [],
       score: 0,
-      level: 0,
+      difficulty: 0,
     },
     {
       name: "Ola",
@@ -107,7 +113,7 @@ const handlePlayers = (function () {
       sign: "O",
       moves: [],
       score: 0,
-      level: 0,
+      difficulty: 0,
     },
   ];
   let activePlayer = players[0];
@@ -145,6 +151,16 @@ const handlePlayers = (function () {
     }
   };
 
+  const setDifficulty = function (player, difficulty) {
+    const playerIndex = player === "Xan" ? 0 : 1;
+    const difficultyType = ["Easy", "Hard", "Death"].indexOf(difficulty);
+    if (difficulty === "Death") {
+      alert("Sorry, this difficulty is not implemented yet!");
+    }
+
+    players[playerIndex].difficulty = difficultyType;
+  };
+
   return {
     getActivePlayer,
     setActivePlayer,
@@ -152,6 +168,7 @@ const handlePlayers = (function () {
     setPlayer,
     switchTurn,
     toggleActivePlayer,
+    setDifficulty,
   };
 })();
 
@@ -315,6 +332,27 @@ const setPlayers = (function () {
 
   const xanDifficulty = document.querySelectorAll(".xanDifficulty button");
   const olaDifficulty = document.querySelectorAll(".olaDifficulty button");
+
+  const toggleActiveDifficulty = (buttons, clickedButton) => {
+    buttons.forEach((button) => {
+      button.classList.remove("active");
+    });
+    clickedButton.classList.add("active");
+  };
+
+  xanDifficulty.forEach((button) => {
+    button.addEventListener("click", () => {
+      handlePlayers.setDifficulty("Xan", button.textContent);
+      toggleActiveDifficulty(xanDifficulty, button);
+    });
+  });
+
+  olaDifficulty.forEach((button) => {
+    button.addEventListener("click", () => {
+      handlePlayers.setDifficulty("Ola", button.textContent);
+      toggleActiveDifficulty(olaDifficulty, button);
+    });
+  });
 })();
 
 const changeScreens = (function () {

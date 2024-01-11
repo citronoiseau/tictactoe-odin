@@ -73,6 +73,15 @@ h2,
   left: 50%;
   transform: translate(-50%, -50%);
 }
+.difficultyContainer button.active {
+  background-color: #a14625;
+}
+.difficultyContainer button.active:hover {
+  background-color: #c87050;
+}
+.difficultyContainer button.active:active {
+  background-color: #db8a6c;
+}
 .card {
   display: flex;
   flex-direction: column;
@@ -175,6 +184,7 @@ h3,
   border-radius: 25px;
   font-size: 2rem;
   transition: all 0.4s ease;
+  color: #bbbbbb;
 }
 .boardCell:hover {
   background-color: #ffc2a8;
@@ -184,6 +194,12 @@ h3,
 .boardCell:active,
 .card button:active {
   background-color: #feecdb;
+}
+.xColor {
+  color: #778132;
+}
+.oColor {
+  color: #ff9a9a;
 }
 .gameControlsContainer {
   display: flex;
