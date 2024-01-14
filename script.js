@@ -205,8 +205,12 @@ const gameController = (function () {
           botMoveWait = setTimeout(() => {
             if (handlePlayers.getActivePlayer().difficulty === 1) {
               botPlayHard();
-            } else if (handlePlayers.getActivePlayer().difficulty === 0) {
+            }
+            if (handlePlayers.getActivePlayer().difficulty === 0) {
               botPlay();
+            }
+            if (handlePlayers.getActivePlayer().difficulty === 2) {
+              botPlayDeath();
             }
           }, 500);
         }
@@ -267,6 +271,9 @@ const gameController = (function () {
         if (handlePlayers.getActivePlayer().difficulty === 0) {
           botPlay();
         }
+        if (handlePlayers.getActivePlayer().difficulty === 2) {
+          botPlayDeath();
+        }
       }, 700);
     }
   };
@@ -293,6 +300,9 @@ const gameController = (function () {
         }
         if (handlePlayers.getActivePlayer().difficulty === 0) {
           botPlay();
+        }
+        if (handlePlayers.getActivePlayer().difficulty === 2) {
+          botPlayDeath();
         }
       }, 500);
     }
@@ -361,6 +371,56 @@ function botPlayHard() {
   gameController.playRound(botMove);
 }
 
+function botPlayDeath() {
+  const availableCells = [];
+  const board = GameBoard.getBoard();
+  let opponentMoves = handlePlayers.getWaitingPlayer().moves;
+  let botMoves = handlePlayers.getActivePlayer().moves;
+  for (let i = 0; i < board.length; i++) {
+    if (board[i] === "") {
+      availableCells.push(i);
+    }
+  }
+  const conditions = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (const condition of conditions) {
+    const occupiedByBot = condition.filter((cell) => botMoves.includes(cell));
+    const unoccupiedCells = condition.filter(
+      (cell) => !botMoves.includes(cell) && board[cell] === ""
+    );
+    if (unoccupiedCells.length === 1 && occupiedByBot.length === 2) {
+      const smartCell = unoccupiedCells[0];
+      gameController.playRound(smartCell);
+      return;
+    }
+  }
+  for (const condition of conditions) {
+    const occupiedByOpponent = condition.filter((cell) =>
+      opponentMoves.includes(cell)
+    );
+
+    const unoccupiedCells = condition.filter(
+      (cell) => !opponentMoves.includes(cell) && board[cell] === ""
+    );
+
+    if (unoccupiedCells.length === 1 && occupiedByOpponent.length === 2) {
+      const blockingCell = unoccupiedCells[0];
+      gameController.playRound(blockingCell);
+      return;
+    }
+  }
+  const randomIndex = Math.floor(Math.random() * availableCells.length);
+  const botMove = availableCells[randomIndex];
+  gameController.playRound(botMove);
+}
 const setPlayers = (function () {
   const setPlayerFirstBtn = document.querySelector("#choosePlayerOne");
   const setBotFirstBtn = document.querySelector("#chooseBotOne");
@@ -401,23 +461,15 @@ const setPlayers = (function () {
 
   xanDifficulty.forEach((button) => {
     button.addEventListener("click", () => {
-      if (button.textContent !== "Death") {
-        handlePlayers.setDifficulty("Xan", button.textContent);
-        toggleActiveDifficulty(xanDifficulty, button);
-      } else {
-        alert("Sorry, this difficulty is not implemented yet!");
-      }
+      handlePlayers.setDifficulty("Xan", button.textContent);
+      toggleActiveDifficulty(xanDifficulty, button);
     });
   });
 
   olaDifficulty.forEach((button) => {
     button.addEventListener("click", () => {
-      if (button.textContent !== "Death") {
-        handlePlayers.setDifficulty("Ola", button.textContent);
-        toggleActiveDifficulty(olaDifficulty, button);
-      } else {
-        alert("Sorry, this difficulty is not implemented yet!");
-      }
+      handlePlayers.setDifficulty("Ola", button.textContent);
+      toggleActiveDifficulty(olaDifficulty, button);
     });
   });
 })();
