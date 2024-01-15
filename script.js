@@ -254,6 +254,7 @@ const gameController = (function () {
     isWin = false;
     rounds = 1;
     generalRounds = 1;
+    checkStartingIndex.setIndex(null);
     displayDOM.setRoundCounter(1);
     handlePlayers.setActivePlayer();
     displayDOM.setGameMessage(
@@ -290,6 +291,7 @@ const gameController = (function () {
     isWin = false;
     rounds = 1;
     generalRounds++;
+    checkStartingIndex.setIndex(null);
     displayDOM.setRoundCounter(generalRounds);
     handlePlayers.setActivePlayer();
     displayDOM.setGameMessage(
@@ -425,10 +427,62 @@ function botPlayDeath() {
       return;
     }
   }
+
+  const startTurns = [
+    [0, 4],
+    [1, 2],
+    [2, 4],
+    [3, 6],
+    [4, 2],
+    [5, 8],
+    [6, 4],
+    [7, 8],
+    [8, 4],
+  ];
+
+  if (botMoves.length <= 2) {
+    if (checkStartingIndex.getIndex() === null) {
+      checkStartingIndex.setIndex(
+        Math.floor(Math.random() * startTurns.length)
+      );
+      console.log(checkStartingIndex.getIndex());
+    }
+
+    const [firstTurn, secondTurn] = startTurns[checkStartingIndex.getIndex()];
+
+    if (botMoves.length < 1 && board[firstTurn] === "") {
+      gameController.playRound(firstTurn);
+      console.log(`Bot made smart fisrt Turn:${firstTurn}`);
+      return;
+    }
+
+    if (botMoves.length < 2 && board[secondTurn] === "") {
+      gameController.playRound(secondTurn);
+      console.log(`Bot made smart secondTurn:${secondTurn}`);
+      return;
+    }
+  }
+
   const randomIndex = Math.floor(Math.random() * availableCells.length);
   const botMove = availableCells[randomIndex];
   gameController.playRound(botMove);
 }
+
+const checkStartingIndex = (function () {
+  let startingIndex = null;
+
+  const setIndex = (value) => {
+    startingIndex = value;
+  };
+
+  const getIndex = () => startingIndex;
+
+  return {
+    setIndex,
+    getIndex,
+  };
+})();
+
 const setPlayers = (function () {
   const setPlayerFirstBtn = document.querySelector("#choosePlayerOne");
   const setBotFirstBtn = document.querySelector("#chooseBotOne");
