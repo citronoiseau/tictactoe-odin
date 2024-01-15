@@ -117,7 +117,6 @@ const handlePlayers = (function () {
     },
   ];
   let activePlayer = players[0];
-  const getActivePlayer = () => activePlayer;
   const getWaitingPlayer = function () {
     if (players[0] === activePlayer) {
       return players[1];
@@ -148,6 +147,7 @@ const handlePlayers = (function () {
 
     return activePlayer;
   };
+  const getActivePlayer = () => activePlayer;
 
   const toggleActivePlayer = function (playerBtn, botBtn, index) {
     if (players[index].status === "Player") {
@@ -200,17 +200,19 @@ const gameController = (function () {
       rounds++;
       if (rounds <= 9) {
         handlePlayers.switchTurn();
-        activePlayer = handlePlayers.getActivePlayer();
         if (handlePlayers.getActivePlayer().status === "Bot") {
           botMoveWait = setTimeout(() => {
             if (handlePlayers.getActivePlayer().difficulty === 1) {
               botPlayHard();
+              return;
             }
             if (handlePlayers.getActivePlayer().difficulty === 0) {
               botPlay();
+              return;
             }
             if (handlePlayers.getActivePlayer().difficulty === 2) {
               botPlayDeath();
+              return;
             }
           }, 500);
         }
@@ -267,12 +269,15 @@ const gameController = (function () {
       botMoveWait = setTimeout(() => {
         if (handlePlayers.getActivePlayer().difficulty === 1) {
           botPlayHard();
+          return;
         }
         if (handlePlayers.getActivePlayer().difficulty === 0) {
           botPlay();
+          return;
         }
         if (handlePlayers.getActivePlayer().difficulty === 2) {
           botPlayDeath();
+          return;
         }
       }, 700);
     }
@@ -297,12 +302,15 @@ const gameController = (function () {
       botMoveWait = setTimeout(() => {
         if (handlePlayers.getActivePlayer().difficulty === 1) {
           botPlayHard();
+          return;
         }
         if (handlePlayers.getActivePlayer().difficulty === 0) {
           botPlay();
+          return;
         }
         if (handlePlayers.getActivePlayer().difficulty === 2) {
           botPlayDeath();
+          return;
         }
       }, 500);
     }
